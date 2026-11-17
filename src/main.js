@@ -217,7 +217,7 @@ const DELAY = 3;   // input delay in frames (~50 ms); both sides wait for each o
 function onlineStep(m) {
   const F = m.frame; if (m.loc[F] === undefined || O.rem[F] === undefined) return null;   // stall until opponent's input arrives
   const masks = O.me === 0 ? [m.loc[F], O.rem[F]] : [O.rem[F], m.loc[F]], idx = a => ACTIONS.indexOf(a);
-  const out = masks.map((k, p) => { const h = a => ((k >> idx(a)) & 1) === 1, pr = a => h(a) && ((m.pm[p] >> idx(a)) & 1) === 0; m.pm[p] = k;
+  const out = masks.map((k, p) => { const prev = m.pm[p], h = a => ((k >> idx(a)) & 1) === 1, pr = a => h(a) && ((prev >> idx(a)) & 1) === 0; m.pm[p] = k;
     return { left: h('left'), right: h('right'), up: h('up'), down: h('down'), block: h('block'), lightP: pr('light'), heavyP: pr('heavy'), specialP: pr('special') }; });
   let mine = 0; ACTIONS.forEach((a, i) => { if (held(0, a) || held(1, a)) mine |= 1 << i; });   // either keyboard layout or any pad works locally
   m.loc[F + DELAY] = mine; O.send({ t: 'inp', f: F + DELAY, m: mine });
