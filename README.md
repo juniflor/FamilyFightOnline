@@ -45,3 +45,6 @@ Limits: needs internet access to unpkg.com and 0.peerjs.com; a few strict corpor
 
 ## v1.3: mobile / touch
 On phones and tablets (touch screens) on-screen controls appear automatically: D-pad on the left (up = jump, down = crouch), PUNCH / KICK / SPEC / BLOCK on the right, MENU (= Esc) at the bottom centre. Hold DOWN + BLOCK to crouch-block, DOWN + PUNCH/KICK for low attacks, like on keyboard. Play in landscape. Touch controls drive player 1, so use them for CPU matches and online play (one phone cannot do local two-player). Tap menu items directly or use the D-pad + PUNCH to confirm.
+
+## v1.4: remap controls
+Main menu > **REMAP CONTROLS**. Two pages (Tab switches): **Keyboard** (every action for P1 and P2) and **Gamepad** (punch, kick, special, jump, block; stick/d-pad always move). Up/Down pick a row, Left/Right switch player, Enter (or the punch button) then press the new key/button, Del resets one binding, Esc cancels or leaves. Clicking a row works too. If you pick a key that's already used, the two actions swap. Reserved keys: Esc, Enter, Tab, P (pause), M (sound); gamepad Back/Select swaps player slots. Bindings are saved in the browser (localStorage) and shown on the CONTROLS screen. Online play uses your own bindings, and your opponent never needs the same ones.
