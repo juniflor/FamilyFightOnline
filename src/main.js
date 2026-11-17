@@ -90,9 +90,6 @@ function drawHUD() {
     c.fillStyle = f.hp / f.def.hp > .3 ? '#3d6' : '#ee3'; const hw = w * Math.max(0, f.hp) / f.def.hp; c.fillRect(i ? x + w - hw : x, 16, hw, 8);
     txt((O ? (i === O.me ? 'YOU ' : 'OPP ') : i ? (m.cpu ? 'CPU ' : 'P2 ') : 'P1 ') + f.def.name, i ? x + w : x, 38, 8, '#fff', i ? 'right' : 'left');
     for (let k = 0; k < 2; k++) { c.fillStyle = k < m.wins[i] ? '#fc3' : '#333'; c.fillRect(i ? x + k * 10 : x + w - 8 - k * 10, 42, 8, 5); } });
-  m.f.forEach((f, i) => { const x = i ? 462 : 18, al = i ? 'right' : 'left';
-    if (f.hits >= 2 && f.hitsT > 0) txt(f.hits + ' HITS!', x, 66, 12, '#fc3', al);
-    if (f.comboName && f.comboT > 0) txt(f.comboName, x, 80, 9, '#fff', al); });
   txt(String(Math.ceil(m.timer / 60)).padStart(2, '0'), 240, 28, 16, '#fff');
   if (m.msg) txt(m.msg, 240, 110, 24, '#fc3');
   if (paused) txt('PAUSED  (P resume, Esc quit)', 240, 140, 10);
