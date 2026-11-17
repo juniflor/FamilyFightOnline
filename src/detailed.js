@@ -53,14 +53,19 @@ export function drawDetailed(c, f, force) {
       if (P.barefoot) { if (kick) r(x - 2, y - 4, 5, 8, 'skin'); else { r(x - 3, y + 1, 10, 4, 'skin'); r(x + 5, y + 3, 3, 2, 'skinS'); r(x - 3, y + 4, 10, 1, 'skinS'); } return; }
       if (kick) { r(x - 2, y - 4, 5, 8, 'red'); r(x + 3, y - 4, 1, 8, 'sole'); r(x + 1, y - 4, 2, 3, 'blk'); }
       else { r(x - 2, y - 3, 5, 4, 'red'); r(x - 2, y - 3, 5, 1, 'blk'); r(x - 3, y + 1, 10, 3, 'red'); r(x + 4, y + 1, 3, 3, 'blk'); r(x - 3, y + 4, 10, 1, 'sole'); r(x, y - 1, 2, 1, 'white'); } };
-    const leg = (g, kick) => { const lc = P.shorts || P.skinLegs || P.skirt ? 'skin' : 'jean'; limb(hip, g.j, w6, lc); if (!P.flare) limb(g.j, g.e, w5, lc); if (P.skinLegs && !ol) { r(g.j[0] - 1, g.j[1] - 2, 4, 4, 'skinH'); limb([hip[0] + 2, hip[1] + 3], [g.j[0] + 2, g.j[1] - 3], 2, 'skinH'); }
+    const leg = (g, kick) => { const lc = P.shorts || P.skinLegs || P.skirt ? 'skin' : 'jean'; limb(hip, g.j, w6, lc); if (!P.flare && !P.baggy) limb(g.j, g.e, w5, lc); if (P.skinLegs && !ol) { r(g.j[0] - 1, g.j[1] - 2, 4, 4, 'skinH'); limb([hip[0] + 2, hip[1] + 3], [g.j[0] + 2, g.j[1] - 3], 2, 'skinH'); }
       if (P.shorts) { const q = lerp(hip, g.j, .8); limb(hip, q, w9, 'shorts'); if (!ol) { r(q[0] - 4, q[1], 9, 1, 'white'); r(q[0] - 4, q[1] - 2, 1, 2, 'shortsD'); } } else if (!ol && !P.skinLegs && !P.skirt) { limb([hip[0] + 2, hip[1] + 2], [g.j[0] + 2, g.j[1]], 1, 'jeanH'); r(g.j[0] - 2, g.j[1], 5, 1, 'jeanD'); } if (P.skirt) { shoe(g.e, kick); const hem = lerp(hip, g.e, .8); limb(hip, g.j, w6 + 1, 'hood'); limb(g.j, hem, w6, 'hood'); taper(hip, hem, 9, 12, 'hood');
         if (!ol) { taper([hip[0] - 1, hip[1] + 2], [hem[0] - 2, hem[1]], 1, 2, 'hoodD'); taper([hip[0] + 2, hip[1] + 2], [hem[0] + 3, hem[1]], 1, 2, 'hoodL'); r(hem[0] - 6, hem[1] + 1, 12, 1, 'hoodDD'); } }
+      else if (P.baggy) { shoe(g.e, kick); limb(hip, g.j, w9, 'jean'); taper(g.j, [g.e[0], g.e[1] - 1], w9, w9 + 3, 'jean');   // wide straight-leg jeans that bunch over the sneakers
+        if (!ol) { taper([g.j[0] + 2, g.j[1] + 1], [g.e[0] + 3, g.e[1] - 3], 1, 3, 'jeanH'); taper([g.j[0] - 2, g.j[1] + 2], [g.e[0] - 3, g.e[1] - 2], 1, 2, 'jeanD'); r(g.e[0] - 6, g.e[1] - 1, 12, 1, 'jeanD'); r(g.j[0] - 3, g.j[1] + 3, 7, 1, 'jeanD'); } }
       else if (P.flare) { shoe(g.e, kick); taper(g.j, [g.e[0] - 1, g.e[1] + 1], 6, 13, 'jean'); if (!ol) { taper([g.j[0] + 2, g.j[1] + 2], [g.e[0] + 3, g.e[1] - 1], 1, 3, 'jeanH'); r(g.e[0] - 7, g.e[1] + 1, 13, 1, 'jeanD'); } } else shoe(g.e, kick); };
     const arm = (g, k, sk) => { if (P.puff) limb([sx, sy - 1], [sx, sy - 1], w5 + 3, k); if (P.shortSleeve) { limb([sx, sy], g.j, w5, sk); limb(g.j, g.e, w4, sk); limb([sx, sy], lerp([sx, sy], g.j, .45), w5 + 1, k); }
       else { limb([sx, sy], g.j, w5, k); limb(g.j, g.e, w4, k); if (!ol && !P.bare) limb(lerp(g.j, g.e, .7), g.e, 4, 'hoodDD'); }
       r(g.e[0] - fs / 2, g.e[1] - fs / 2, fs, fs, 'skin'); if (!ol) { r(g.e[0] - fs / 2, g.e[1], fs, 1, 'skinS'); } };
-    if (P.wavy) { const bx = nx - 4 + tilt, by = ny - 10; r(bx - 5, by + 1, 9, 26, 'hair'); r(bx - 7, by + 6, 3, 7, 'hair'); r(bx - 6, by + 15, 3, 8, 'hair'); r(bx - 4, by + 24, 5, 4, 'hair'); r(bx - 8, by + 19, 3, 5, 'hair');
+    if (P.wavy && P.shortHair) { const bx = nx - 4 + tilt, by = ny - 10;   // shoulder-length wavy hair
+      r(bx - 5, by + 1, 9, 14, 'hair'); r(bx - 7, by + 5, 3, 8, 'hair'); r(bx - 6, by + 11, 3, 5, 'hair'); r(bx - 3, by + 13, 5, 3, 'hair');
+      if (!ol) { r(bx - 3, by + 4, 1, 7, 'hairH'); r(bx - 5, by + 10, 1, 4, 'hairH'); r(bx - 1, by + 10, 1, 4, 'hairH'); } }
+    else if (P.wavy) { const bx = nx - 4 + tilt, by = ny - 10; r(bx - 5, by + 1, 9, 26, 'hair'); r(bx - 7, by + 6, 3, 7, 'hair'); r(bx - 6, by + 15, 3, 8, 'hair'); r(bx - 4, by + 24, 5, 4, 'hair'); r(bx - 8, by + 19, 3, 5, 'hair');
       if (!ol) { r(bx - 3, by + 4, 1, 9, 'hairH'); r(bx - 5, by + 15, 1, 6, 'hairH'); r(bx - 1, by + 14, 1, 9, 'hairH'); r(bx - 7, by + 8, 1, 3, 'hairH'); } }
     if (!P.bare && !P.noHoodie) r(nx - 9, ny - 3, 6, 6, 'hoodD');                              // hood bunched behind the neck
     arm(armB, 'hoodD', 'skinS'); leg(legB, false); leg(legF, kicking);
@@ -75,7 +80,7 @@ export function drawDetailed(c, f, force) {
     if (P.belt) { r(hip[0] - 6, hip[1] - 4, 12, 3, 'hoodD'); r(hip[0], hip[1] - 5, 4, 5, 'hoodL'); r(hip[0] + 1, hip[1] - 4, 2, 3, 'hoodDD'); }
     if (P.highWaist) { limb([hip[0], hip[1] + 1], [hip[0], hip[1] + 3], w12, 'jean'); if (!ol) { r(hip[0] - Math.round(w12 / 2), hip[1] - 5, w12, 2, 'jeanD'); r(hip[0] + 1, hip[1] - 4, 2, 1, 'white'); } }
     if (P.shoulders) { r(nx - 5, ny - 1, 11, 4, 'skin'); if (!ol) r(nx - 1, ny + 3, 5, 1, 'skinS'); }
-    if (P.wavy) { r(nx + 3, ny + 2, 3, 14, 'hair'); if (!ol) { r(nx + 4, ny + 4, 1, 9, 'hairH'); r(nx + 3, ny + 13, 1, 2, 'hairH'); } }
+    if (P.wavy) { const sl = P.shortHair ? 6 : 14; r(nx + 3, ny + 2, 3, sl, 'hair'); if (!ol) { r(nx + 4, ny + 4, 1, sl - 5, 'hairH'); if (!P.shortHair) r(nx + 3, ny + 13, 1, 2, 'hairH'); } }
     const hx = nx - 4 + tilt, hy = ny - 10;                         // head
     r(hx, hy, 10, 10, 'skin'); if (P.chubby) r(hx - 1, hy + 5, 12, 6, 'skin'); if (!ol) { if (P.chubby) r(hx, hy + 10, 11, 2, 'hoodDD'); r(hx, hy + 8, 10, 2, 'skinS'); r(hx + 1, hy + 4, 2, 3, 'skinS'); r(hx + 10, hy + 6, 1, 2, 'skin');
       if (hurt) { r(hx + 5, hy + 5, 4, 1, 'eye'); r(hx + 5, hy + 2, 5, 1, 'hair'); } else { r(hx + 5, hy + 4, 4, 3, 'white'); r(hx + 7, hy + 4, 2, 3, 'eye'); r(hx + 5, hy + 2, 5, 1, 'hair'); r(hx + 8, hy + 3, 2, 1, 'hair'); }
