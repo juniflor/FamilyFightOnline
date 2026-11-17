@@ -138,7 +138,7 @@ const toasts = [];
 function frame() {
   poll(); for (const e of takeEvents()) { toasts.push({ s: e.text, t: 240 }); if (e.type === 'off' && scene === 'match' && !O) paused = true; } if (hit('KeyM')) { S.sound = !S.sound; audio.setOn(S.sound); save(); }
   if (scene === 'match') { matchUpdate(); if (scene === 'match') drawMatch(); }
-  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.2.1 (online)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
+  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.2.2 (online)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
   else if (scene === 'versus') { drawStage(c); txt('VERSUS MODE', 240, 70, 20, '#fc3'); drawList(128); menuNav(); }
   else if (scene === 'online') { drawStage(c); txt('PLAY ONLINE', 240, 70, 20, '#fc3'); txt('Host a room, share the code or link', 240, 92, 8, '#7ef'); drawList(128); menuNav(); }
   else if (scene === 'lobby') { drawLobby(); }
@@ -179,7 +179,7 @@ function onMsg(m) {
 }
 function newRoom(me, code) {
   if (!window.Peer) { toasts.push({ s: 'Online library failed to load (check connection)', t: 240 }); return false; }
-  leaveOnline(); O = { me, code, rem: {}, status: me ? 'Connecting...' : 'Creating room...', send() {} }; return true;
+  leaveOnline(); O = { me, code, rem: {}, pend: 0, status: me ? 'Connecting...' : 'Creating room...', send() {} }; return true;
 }
 function hostGame() {
   const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let code = ''; for (let i = 0; i < 4; i++) code += A[Math.random() * A.length | 0];
@@ -213,13 +213,14 @@ function onlineSelectUpdate() {
     if (L('light') || hit('Enter') || hit('Space')) { lock[me] = true; audio.sfx('beep'); O.send({ t: 'sel', i: S.sel[me] }); O.send({ t: 'lock', v: true }); } }
   if (me === 0) { if (lock[0] && lock[1]) { if (++goT > 45) { O.send({ t: 'start', sel: S.sel }); startMatch(); } } else goT = 0; }
 }
-const DELAY = 3;   // input delay in frames (~50 ms); both sides wait for each other's input before simulating a frame
+const DELAY = 6;   // input delay in frames (~100 ms); both sides wait for each other's input before simulating a frame
 function onlineStep(m) {
+  ACTIONS.forEach((a, i) => { if (held(0, a) || held(1, a)) O.pend |= 1 << i; });   // latch every real frame; either keyboard layout or any pad
   const F = m.frame; if (m.loc[F] === undefined || O.rem[F] === undefined) return null;   // stall until opponent's input arrives
   const masks = O.me === 0 ? [m.loc[F], O.rem[F]] : [O.rem[F], m.loc[F]], idx = a => ACTIONS.indexOf(a);
   const out = masks.map((k, p) => { const prev = m.pm[p], h = a => ((k >> idx(a)) & 1) === 1, pr = a => h(a) && ((prev >> idx(a)) & 1) === 0; m.pm[p] = k;
     return { left: h('left'), right: h('right'), up: h('up'), down: h('down'), block: h('block'), lightP: pr('light'), heavyP: pr('heavy'), specialP: pr('special') }; });
-  let mine = 0; ACTIONS.forEach((a, i) => { if (held(0, a) || held(1, a)) mine |= 1 << i; });   // either keyboard layout or any pad works locally
+  const mine = O.pend; O.pend = 0;   // everything pressed since the last simulated frame (so quick taps survive lag stalls)
   m.loc[F + DELAY] = mine; O.send({ t: 'inp', f: F + DELAY, m: mine });
   delete m.loc[F]; delete O.rem[F]; m.frame++; return out;
 }
