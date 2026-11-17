@@ -1,9 +1,10 @@
 import { CHARACTERS, ROSTER } from './characters.js';
 import { Fighter, GROUND } from './fighter.js';
 import { drawFighter, drawStage, shadow } from './sprites.js';
-import { poll, pressed, held, hit, endFrame, padCount, padStatus, takeEvents, ACTIONS } from './input.js';
+import { poll, pressed, held, hit, endFrame, padCount, padStatus, takeEvents, ACTIONS, PAD_ACTIONS, captureKey, capturePad, getKey, getPad, setKey, setPad, resetKey, resetPad, resetAll } from './input.js';
 import { makeAI, aiThink } from './ai.js';
 import { audio } from './audio.js';
+import './touch.js';
 
 const cv = document.getElementById('c'), c = cv.getContext('2d'); c.imageSmoothingEnabled = false;
 const saved = (() => { try { return JSON.parse(localStorage.getItem('pixelfighter')) || {}; } catch { return {}; } })();
@@ -17,7 +18,7 @@ let O = null;   // online session (null when offline)
 let scene = 'menu', sel = 0, M = null, lock = [false, false], goT = 0, paused = false;
 const txt = (s, x, y, size = 8, col = '#fff', al = 'center') => { c.font = `bold ${size}px monospace`; c.textAlign = al; c.fillStyle = '#000'; c.fillText(s, x + 1, y + 1); c.fillStyle = col; c.fillText(s, x, y); };
 const LISTS = {
-  menu: () => ['VERSUS MODE', 'PLAY ONLINE', 'CONTROLS', 'SOUND: ' + (S.sound ? 'ON' : 'OFF')],
+  menu: () => ['VERSUS MODE', 'PLAY ONLINE', 'CONTROLS', 'REMAP CONTROLS', 'SOUND: ' + (S.sound ? 'ON' : 'OFF')],
   versus: () => ['PLAYER vs PLAYER', 'PLAYER vs CPU', 'BACK'],
   online: () => ['HOST GAME', 'JOIN GAME', 'BACK'],
   results: () => O ? ['PLAY AGAIN', 'LEAVE'] : ['REMATCH', 'CHARACTER SELECT', 'MAIN MENU'],
@@ -25,7 +26,7 @@ const LISTS = {
 const go = s => { scene = s; sel = 0; };
 function activate(i) {
   audio.sfx('beep');
-  if (scene === 'menu') { if (i === 0) go('versus'); else if (i === 1) go('online'); else if (i === 2) go('controls'); else { S.sound = !S.sound; audio.setOn(S.sound); save(); } }
+  if (scene === 'menu') { if (i === 0) go('versus'); else if (i === 1) go('online'); else if (i === 2) go('controls'); else if (i === 3) { R.page = 0; R.p = 0; R.row = 0; R.wait = false; R.msg = ''; go('remap'); } else { S.sound = !S.sound; audio.setOn(S.sound); save(); } }
   else if (scene === 'online') { if (i === 0) hostGame(); else if (i === 1) { const code = (prompt('Enter the room code:') || '').trim().toUpperCase(); if (code) joinGame(code); } else go('menu'); }
   else if (scene === 'results' && O) { if (i === 0) { lock[O.me] = false; O.send({ t: 'lock', v: false }); goT = 0; go('select'); } else { leaveOnline(); go('menu'); } }
   else if (scene === 'versus') { if (i === 2) go('menu'); else { S.mode = i ? 'cpu' : 'pvp'; save(); lock = [false, false]; goT = 0; go('select'); } }
@@ -33,6 +34,9 @@ function activate(i) {
 }
 cv.addEventListener('click', e => { const r = cv.getBoundingClientRect(), y = (e.clientY - r.top) * 270 / r.height;
   if (scene === 'controls') return go('menu');
+  if (scene === 'remap') { if (R.wait) return; const x = (e.clientX - r.left) * 480 / r.width;
+    if (y < 56 && y > 38) { R.page = x > 240 ? 1 : 0; R.row = 0; R.msg = ''; return; }
+    const i = Math.floor((y - 74) / 16); if (i >= 0 && i <= remapRows()) { R.row = i; if (!R.page && i < ACTIONS.length) R.p = x > 240 ? 1 : 0; remapSelect(); } return; }
   if (scene === 'lobby') { if (O && O.me === 0) { try { navigator.clipboard.writeText(roomLink()); toasts.push({ s: 'Invite link copied!', t: 120 }); } catch {} } return; }
   const l = LISTS[scene]?.(); if (!l) return;
   const i = Math.floor((y - (scene === 'results' ? 168 : 128)) / 22); if (i >= 0 && i < l.length) activate(i); });
@@ -127,10 +131,53 @@ function drawSelect() {
     if (S.sel[0] === i) { c.strokeStyle = '#7ef'; c.strokeRect(x + .5, 233.5, 15, 15); } if (S.sel[1] === i) { c.strokeStyle = '#f77'; c.strokeRect(x + 2.5, 235.5, 11, 11); } });
   txt('MOVE: left/right   CONFIRM: Light   CANCEL: Heavy   ESC: back', 240, 262, 7, '#ccc'); txt(padStatus(), 240, 12, 7, '#8f8');
 }
+// ---- remap screen: rebind keyboard keys (both players) and gamepad buttons; saved in localStorage ----
+const R = { page: 0, p: 0, row: 0, wait: false, msg: '', cool: 0 };
+const KN = { ArrowLeft: 'LEFT', ArrowRight: 'RIGHT', ArrowUp: 'UP', ArrowDown: 'DOWN', ShiftLeft: 'L-SHIFT', ShiftRight: 'R-SHIFT', ControlLeft: 'L-CTRL', ControlRight: 'R-CTRL', AltLeft: 'L-ALT', AltRight: 'R-ALT',
+  Space: 'SPACE', Backspace: 'BKSP', Semicolon: ';', Comma: ',', Period: '.', Slash: '/', Quote: "'", BracketLeft: '[', BracketRight: ']', Backslash: '\\', Minus: '-', Equal: '=', Backquote: '`' };
+const keyName = c => !c ? '?' : KN[c] || (c.startsWith('Key') ? c.slice(3) : c.startsWith('Digit') ? c.slice(5) : c.startsWith('Numpad') ? 'NUM' + c.slice(6).toUpperCase() : c.toUpperCase());
+const PN = ['A/CROSS', 'B/CIRCLE', 'X/SQUARE', 'Y/TRIANGLE', 'LB', 'RB', 'LT', 'RT', 'BACK', 'START', 'L3', 'R3'], padName = i => PN[i] || 'BTN ' + i;
+const ACT_NAME = { left: 'LEFT', right: 'RIGHT', up: 'JUMP', down: 'CROUCH', light: 'PUNCH', heavy: 'KICK', special: 'SPECIAL', block: 'BLOCK' };
+const RESERVED = ['Escape', 'Enter', 'KeyP', 'KeyM', 'Tab'];
+const remapRows = () => R.page ? PAD_ACTIONS.length : ACTIONS.length;   // the row after these is RESET ALL
+function remapSelect() {
+  const n = remapRows(); if (R.row === n) { resetAll(); R.msg = 'All controls reset to defaults'; return; }
+  R.wait = true; R.msg = '';
+  if (!R.page) { const p = R.p, a = ACTIONS[R.row];
+    captureKey(code => { R.wait = false; R.cool = 20; if (code === 'Escape') return; if (RESERVED.includes(code)) { R.msg = keyName(code) + ' is reserved'; return; } setKey(p, a, code); R.msg = ACT_NAME[a] + ' = ' + keyName(code); }); }
+  else { const a = PAD_ACTIONS[R.row]; capturePad(i => { R.wait = false; R.cool = 20; setPad(a, i); R.msg = ACT_NAME[a] + ' = ' + padName(i); }); }
+}
+function remapUpdate() {
+  if (R.cool > 0) R.cool--;
+  if (R.wait) { if (R.page && hit('Escape')) { capturePad(null); R.wait = false; R.cool = 20; } return; }
+  if (R.cool > 0) return;
+  if (hit('Escape')) return go('menu');
+  const n = remapRows();
+  if (any('up') || hit('ArrowUp')) R.row = (R.row + n) % (n + 1); if (any('down') || hit('ArrowDown')) R.row = (R.row + 1) % (n + 1);
+  if (!R.page) { if (any('left') || hit('ArrowLeft')) R.p = 0; if (any('right') || hit('ArrowRight')) R.p = 1; }
+  if (hit('Tab')) { R.page ^= 1; R.row = 0; R.msg = ''; }
+  if (hit('Delete') || hit('Backspace')) { if (R.row < n) { if (R.page) resetPad(PAD_ACTIONS[R.row]); else resetKey(R.p, ACTIONS[R.row]); R.msg = 'Reset to default'; } }
+  if (hit('Enter') || any('light')) remapSelect();
+}
+function drawRemap() {
+  drawStage(c); c.fillStyle = 'rgba(0,0,0,.75)'; c.fillRect(20, 12, 440, 248); txt('REMAP CONTROLS', 240, 32, 14, '#fc3');
+  txt('KEYBOARD', 190, 50, 8, R.page ? '#777' : '#7ef'); txt('GAMEPAD', 290, 50, 8, R.page ? '#7ef' : '#777');
+  const n = remapRows(), W = R.wait, blink = (performance.now() / 300 | 0) % 2;
+  if (!R.page) for (let p = 0; p < 2; p++) { const x0 = p ? 250 : 30; txt(p ? 'PLAYER 2' : 'PLAYER 1', x0 + 100, 68, 9, p ? '#f77' : '#7ef');
+    ACTIONS.forEach((a, i) => { const on = R.row === i && R.p === p, y = 82 + i * 16;
+      txt((on ? '> ' : '  ') + ACT_NAME[a], x0, y, 8, on ? '#fc3' : '#fff', 'left'); txt(on && W ? (blink ? 'PRESS KEY' : '') : keyName(getKey(p, a)), x0 + 200, y, 8, on ? '#fc3' : '#9cf', 'right'); }); }
+  else PAD_ACTIONS.forEach((a, i) => { const on = R.row === i, y = 82 + i * 16;
+    txt((on ? '> ' : '  ') + ACT_NAME[a], 130, y, 8, on ? '#fc3' : '#fff', 'left'); txt(on && W ? (blink ? 'PRESS BUTTON' : '') : getPad(a).map(padName).join('/'), 350, y, 8, on ? '#fc3' : '#9cf', 'right'); });
+  const rOn = R.row === n; txt((rOn ? '> ' : '  ') + 'RESET ALL TO DEFAULTS', 240, 82 + n * 16, 8, rOn ? '#fc3' : '#f99');
+  txt(R.msg, 240, 234, 8, '#8f8');
+  txt(W ? 'Press the new ' + (R.page ? 'button' : 'key') + '  (ESC = cancel)' : 'UP/DOWN pick   ' + (R.page ? '' : 'LEFT/RIGHT player   ') + 'ENTER/PUNCH rebind   DEL default   TAB keyboard/gamepad   ESC back', 240, 250, 6, '#ccc');
+}
 function drawControls() {
+  const k = (p, a) => keyName(getKey(p, a)), pb = a => getPad(a).map(padName).join('/');
   drawStage(c); c.fillStyle = 'rgba(0,0,0,.65)'; c.fillRect(30, 20, 420, 230); txt('CONTROLS', 240, 44, 16, '#fc3');
-  ['P1: A/D move  W jump  S crouch  F light  G heavy  R special  LShift block', 'P2: Arrows move/jump/crouch  Num1 light  Num2 heavy  Num3 special  Num0 block',
-   'Gamepads auto-assign (pad1=P1, pad2=P2); Back/Select swaps; mix with keyboard', 'D-pad/stick move, A light, X heavy, Y special, B jump, bumpers block', 'P pause   M sound   Esc back', 'Win 2 of 3 rounds. 2 min per round.', 'Light=punch, Heavy=kick. Hold DOWN: low punch / sweep. In air: flying punch / kick', 'Press any key / click to return']
+  [`P1: ${k(0, 'left')}/${k(0, 'right')} move  ${k(0, 'up')} jump  ${k(0, 'down')} crouch  ${k(0, 'light')} punch  ${k(0, 'heavy')} kick  ${k(0, 'special')} special  ${k(0, 'block')} block`,
+   `P2: ${k(1, 'left')}/${k(1, 'right')} move  ${k(1, 'up')} jump  ${k(1, 'down')} crouch  ${k(1, 'light')} punch  ${k(1, 'heavy')} kick  ${k(1, 'special')} special  ${k(1, 'block')} block`,
+   'Gamepads auto-assign (pad1=P1, pad2=P2); Back/Select swaps; mix with keyboard', `Pad: stick/d-pad move  ${pb('light')} punch  ${pb('heavy')} kick  ${pb('special')} special  ${pb('up')} jump  ${pb('block')} block`, 'P pause   M sound   Esc back', 'Win 2 of 3 rounds. 2 min per round.', 'Light=punch, Heavy=kick. Hold DOWN: low punch / sweep. In air: flying punch / kick', 'Press any key / click to return']
     .forEach((s, i) => txt(s, 240, 76 + i * 20, 8));
   if (hit('Escape') || hit('Enter') || hit('Space') || any('light')) go('menu');
 }
@@ -138,12 +185,13 @@ const toasts = [];
 function frame() {
   poll(); for (const e of takeEvents()) { toasts.push({ s: e.text, t: 240 }); if (e.type === 'off' && scene === 'match' && !O) paused = true; } if (hit('KeyM')) { S.sound = !S.sound; audio.setOn(S.sound); save(); }
   if (scene === 'match') { matchUpdate(); if (scene === 'match') drawMatch(); }
-  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.2.2 (online)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
+  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.4.0 (online + touch + remap)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
   else if (scene === 'versus') { drawStage(c); txt('VERSUS MODE', 240, 70, 20, '#fc3'); drawList(128); menuNav(); }
   else if (scene === 'online') { drawStage(c); txt('PLAY ONLINE', 240, 70, 20, '#fc3'); txt('Host a room, share the code or link', 240, 92, 8, '#7ef'); drawList(128); menuNav(); }
   else if (scene === 'lobby') { drawLobby(); }
   else if (scene === 'select') { selectUpdate(); if (scene === 'select') drawSelect(); }
   else if (scene === 'controls') drawControls();
+  else if (scene === 'remap') { remapUpdate(); if (scene === 'remap') drawRemap(); }
   else if (scene === 'results') { matchUpdate_results(); }
   if (scene === 'menu' || scene === 'versus') txt(padStatus(), 240, 262, 7, '#8f8');
   if (toasts.length) { const k = toasts[0]; c.fillStyle = 'rgba(0,0,0,.7)'; c.fillRect(60, 252, 360, 14); txt(k.s, 240, 262, 8, '#fc3'); if (--k.t <= 0) toasts.shift(); }
