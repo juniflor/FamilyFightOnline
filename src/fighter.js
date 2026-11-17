@@ -27,7 +27,9 @@ export class Fighter {
     this.buf = null; this.chain.push(k); const c = this.matchCombo(); this.start(k, c);
     if (c) { this.comboName = c.name; this.comboT = 110; }
     if (foe.state === 'hit') { const b = this.def.moves[k], lead = b.type === 'proj' ? b.s + Math.ceil(Math.max(0, Math.abs(foe.x - this.x) - 14) / b.speed) + 3 : b.s + 4; // frames until the next hit lands
-      foe.stun = Math.max(foe.stun, foe.t + lead); } // keep them stunned until then
+      foe.stun = Math.max(foe.stun, foe.t + lead); // keep them stunned until then
+      // follow the knocked-back foe: step in so the next move still reaches (foe slides about 7x its vx; our own slide is about 4x our vx)
+      const fx = foe.x + foe.vx * 7, gap = Math.abs(fx - this.x) - (this.def.w + foe.def.w) / 2 - b.reach * .5; this.vx = this.facing * Math.max(0, Math.min(7, gap / 4)); }
     return true;
   }
   update(i, foe, g) {
