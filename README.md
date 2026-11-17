@@ -42,3 +42,6 @@ Main menu > **PLAY ONLINE**. One player picks **HOST GAME** and gets a 4-letter 
 
 How it works: no game server is needed, so it runs on GitHub Pages. Browsers connect directly over WebRTC (PeerJS, loaded from unpkg; its free public broker is used only to introduce the two browsers). Only button states are exchanged and both browsers run the identical simulation (input-delay lockstep, 3 frames). Local controls are the usual keyboard (either layout) or a gamepad. Esc leaves the match.
 Limits: needs internet access to unpkg.com and 0.peerjs.com; a few strict corporate/school networks block WebRTC (no TURN relay is configured). Gameplay slows if the connection stalls rather than desyncing.
+
+## v1.3: mobile / touch
+On phones and tablets (touch screens) on-screen controls appear automatically: D-pad on the left (up = jump, down = crouch), PUNCH / KICK / SPEC / BLOCK on the right, MENU (= Esc) at the bottom centre. Hold DOWN + BLOCK to crouch-block, DOWN + PUNCH/KICK for low attacks, like on keyboard. Play in landscape. Touch controls drive player 1, so use them for CPU matches and online play (one phone cannot do local two-player). Tap menu items directly or use the D-pad + PUNCH to confirm.
