@@ -34,11 +34,11 @@ Object.assign(CHARACTERS, {
     light: { s: 3, a: 3, r: 7, dmg: 5, kb: 2, hs: 12, reach: 28, y: 16, h: 12, snd: 'light' },
     heavy: { s: 8, a: 4, r: 14, dmg: 10, kb: 4, hs: 20, reach: 34, y: 26, h: 14, snd: 'heavy' },
     special: { s: 6, a: 15, r: 16, dmg: 3, kb: 1.2, hs: 10, reach: 32, y: 14, h: 14, every: 3, snd: 'light' } }), // rapid fire
-  samli: mk([8, 7, 7], { name: 'SAM LI', h: 47, w: 22, leg: 18, torso: 17, skin: '#f1c27d', hair: '#111118', hl: '#9a6a3a', top: '#222228', topD: '#111116',
-    pants: '#3a6ec8', bell: true, shoes: '#eeeeee', style: 'long', glasses: true, hood: false, shortSleeve: true }, {
+  sami: mk([8, 7, 7], { name: 'SAMI', h: 47, w: 22, leg: 18, torso: 17, skin: '#e0aa84', hair: '#5c3421', hl: '#9a5f3a', top: '#34303c', topD: '#24222b',
+    pants: '#5073ab', shoes: '#f6f2f4', style: 'long', glasses: true, hood: false, shortSleeve: true }, {
     light: { s: 3, a: 3, r: 8, dmg: 5, kb: 2.2, hs: 13, reach: 28, y: 14, h: 12, snd: 'light' },
-    heavy: { s: 9, a: 4, r: 14, dmg: 11, kb: 4.5, hs: 21, reach: 38, y: 26, h: 14, snd: 'heavy' },
-    special: { s: 6, a: 20, r: 16, dmg: 4, kb: 1.5, hs: 10, reach: 40, y: 18, h: 16, every: 5, dash: 1.5, spin: true, snd: 'special' } }), // spinning multi-kick
+    heavy: { s: 9, a: 4, r: 14, dmg: 8, kb: 4.5, hs: 21, reach: 36, y: 26, h: 14, snd: 'heavy' },
+    special: { s: 6, a: 20, r: 16, dmg: 3, kb: 1.5, hs: 10, reach: 40, y: 18, h: 16, every: 5, dash: 1.5, spin: true, snd: 'special' } }), // spinning multi-kick
   edson: mk([4, 9, 9], { name: 'EDSON', h: 50, w: 26, leg: 18, torso: 20, bw: 10, lw: 7, armH: 6, skin: '#f1c27d', hair: '#111118', top: '#222228', topD: '#111116',
     pants: '#8a8a94', skinLeg: .5, shoes: '#eeeeee', style: 'buzz', cap: '#2a4a8a', glasses: true, hood: false, shortSleeve: true }, {
     light: { s: 6, a: 3, r: 10, dmg: 6, kb: 3, hs: 14, reach: 28, y: 16, h: 14, snd: 'light' },
@@ -54,8 +54,10 @@ Object.assign(CHARACTERS, {
 function addVariants(d) { const L = d.moves.light, H = d.moves.heavy, h = d.h;
   d.moves.clight = { ...L, s: L.s + 1, dmg: Math.max(1, Math.round(L.dmg * .9)), y: Math.round(h * .6), h: 10 };
   d.moves.cheavy = { ...H, a: 5, r: H.r + 4, dmg: Math.max(1, Math.round(H.dmg * .9)), kb: 2, hs: 26, reach: H.reach + 6, y: h - 10, h: 10, launch: 3.5, sweep: true };
-  d.moves.jlight = { ...L, s: 3, a: 40, r: 0, air: true, y: Math.round(h * .4), h: 14 };
-  d.moves.jheavy = { ...H, s: 4, a: 40, r: 0, air: true, reach: H.reach + 4, y: Math.round(h * .55), h: 16, dmg: Math.max(1, Math.round(H.dmg * .85)) }; }
+  d.moves.jlight = { ...L, s: 3, a: 14, r: 0, air: true, land: 6, y: Math.round(h * .4), h: 14 };   // flying moves: short hit window + landing lag (no more jump-in spam)
+  d.moves.jheavy = { ...H, s: 4, a: 16, r: 0, air: true, land: 11, reach: H.reach + 4, y: Math.round(h * .55), h: 16, dmg: Math.max(1, Math.round(H.dmg * .7)) };
+  // Throw (Light + Heavy together): beats blocking, slow to start and very slow to recover, so it can't be spammed. Grounded foes only.
+  d.moves.throw = { s: 14, a: 3, r: 36, dmg: Math.max(1, Math.round(H.dmg * 1.1)), kb: 4, hs: 40, reach: 18, y: Math.round(h * .22), h: Math.round(h * .5), grab: true, throw: true, launch: 5, final: true, snd: 'heavy' }; }
 Object.values(CHARACTERS).forEach(addVariants);
 // Detailed sprite palette (see src/detailed.js). Gameplay stats are unchanged.
 Object.assign(CHARACTERS.junior, { detail: true, pal: { ol: '#0b0b16', skin: '#f1c27d', skinS: '#d9a05e', hair: '#14141c', hairH: '#33406a', hood: '#2fd3e6', hoodL: '#8ff4ff', hoodD: '#1c9fb5', hoodDD: '#126f84',
@@ -77,4 +79,10 @@ Object.assign(CHARACTERS.esa, { detail: true, body: { leg: 13, arm: 11, torso: 1
   lowGuard: true, noHoodie: true, neckKey: 'skin', wavy: true, shortHair: true, shortSleeve: true, baggy: true, smile: true,
   hood: '#e87a90', hoodL: '#f59aac', hoodD: '#bd5670', hoodDD: '#8c3a50', jean: '#5f7fb0', jeanH: '#8aa3cc', jeanD: '#3f5580',
   red: '#f2edf4', blk: '#c4bace', sole: '#a89fb4', white: '#ffffff', eye: '#1b1214', mouth: '#a8443f' } });
+// Sami: round clear glasses, long straight brown hair (darker at the part), black oversized hoodie with drawstrings and pocket, blue flared jeans, white sneakers.
+Object.assign(CHARACTERS.sami, { detail: true, body: { leg: 13, arm: 10, torso: 12, w: .8 }, pal: { ol: '#0b0a10', skin: '#e0aa84', skinS: '#bf8660', hair: '#5c3421', hairH: '#8a5232', hairE: '#9a5f3a', hairT: '#2a1a14',
+  straight: true, round: true, glasses: true, flare: true, flareS: 5, flareW: 11, lowGuard: true, stringKey: 'hoodL',
+  frame: '#aeb6c0', lens: '#eaf1f7', hood: '#34303c', hoodL: '#5a5568', hoodD: '#24222b', hoodDD: '#17151c',
+  jean: '#5073ab', jeanH: '#7f9fd0', jeanD: '#34517f',
+  red: '#f6f2f4', blk: '#c9c0cc', sole: '#a9a1b6', white: '#ffffff', eye: '#1b1214', mouth: '#c8665f' } });
 export const ROSTER = Object.keys(CHARACTERS);
