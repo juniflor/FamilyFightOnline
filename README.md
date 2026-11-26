@@ -64,3 +64,7 @@ Chain cancels live in `src/combos.js`: when a move connects you can cancel into 
 - **Blocking:** works from either side, and every blocked hit shoves the defender back. If the defender is in a corner (or the attacker jumped in), the attacker is pushed away instead, so nobody gets stuck in a corner.
 - **Flying punch/kick:** shorter hit window, lower kick damage, and landing lag (6 / 11 frames) so you can't chain jump-ins. Define the numbers in `addVariants` in `src/characters.js` (`a`, `land`, `dmg`).
 - **Sami:** kick damage, kick-chain finishers and her multi-kick special were reduced.
+
+## Fighter heights (v1.6)
+Heights are set by `h` (hitbox) and `body` (drawn proportions: `leg`, `arm`, `torso`, `w`) in `src/characters.js`. Drawn heights: Junior 64, Esa 64, Raphy 66, Edson 66, Sydney 60, Sami 60, Mom 63, Marty 75.
+To resize a fighter keep the shape and scale `leg`, `arm` and `torso` together; drawn height is about `2 x leg + torso + 17`.
