@@ -104,10 +104,10 @@ function drawMatch() {
   c.save(); if (M.shake > 0) c.translate(Math.round((Math.random() - .5) * M.shake), Math.round((Math.random() - .5) * M.shake));
   drawStage(c); M.f.forEach(f => shadow(c, f)); drawWaves(c, M);
   const order = M.f[0].state === 'lose' ? [0, 1] : [1, 0]; order.forEach(i => drawWithFx(c, M.f[i], drawFighter));
-  M.projs.forEach(p => { if (p.mv.ball) { const bx = Math.round(p.x), by = Math.round(p.y), a = p.x * .45;   // spinning basketball
-    for (let dy = -5; dy <= 5; dy++) { const hw = Math.round(Math.sqrt(26 - dy * dy)); c.fillStyle = '#2a1408'; c.fillRect(bx - hw, by + dy, 2 * hw + 1, 1); if (Math.abs(dy) < 5) { c.fillStyle = '#e8772e'; c.fillRect(bx - hw + 1, by + dy, 2 * hw - 1, 1); } }
-    c.fillStyle = '#2a1408'; c.fillRect(bx + Math.round(Math.cos(a) * 3), by - 4, 1, 9); c.fillRect(bx - 4, by, 9, 1); c.fillStyle = '#ffb870'; c.fillRect(bx - 3, by - 3, 2, 1); return; }
-  const z = p.mv.size || 10; c.globalAlpha = z > 10 ? .75 : 1; c.fillStyle = p.mv.col; c.fillRect(p.x - z / 2, p.y - z * .4, z, z * .8); c.fillStyle = '#fff'; c.fillRect(p.x - 2, p.y - 2, 4, 4); c.globalAlpha = 1; });
+  M.projs.forEach(p => { const z = p.mv.size || 10; c.globalAlpha = z > 10 ? .75 : 1; c.fillStyle = p.mv.col; c.fillRect(p.x - z / 2, p.y - z * .4, z, z * .8); if (p.mv.ball) { c.fillStyle = '#4a2008'; c.fillRect(p.x - z / 2, p.y - 1, z, 1); c.fillRect(p.x - 1, p.y - z * .4, 1, z * .8); }   // basketball seams
+    else if (p.mv.slip) { const x = Math.round(p.x - z / 2), y = Math.round(p.y - z * .4); c.fillStyle = '#d33'; c.fillRect(x + 2, y + 1, 1, 6); c.fillRect(x + 2, y + 1, 4, 1); c.fillRect(x + 2, y + 3, 3, 1); c.fillStyle = '#9ab'; c.fillRect(x + 7, y + 2, 3, 1); c.fillRect(x + 7, y + 5, 3, 1); }   // test paper with a red F
+    else if (p.mv.ring) { c.strokeStyle = '#fff'; c.lineWidth = 1; c.strokeRect(Math.round(p.x - z / 2) + .5, Math.round(p.y - z * .4) + .5, z - 1, z * .8 - 1); c.strokeRect(Math.round(p.x - z / 4) + .5, Math.round(p.y - z * .2) + .5, z / 2 - 1, z * .4 - 1); }   // sound-wave rings
+    else { c.fillStyle = '#fff'; c.fillRect(p.x - 2, p.y - 2, 4, 4); } c.globalAlpha = 1; });
   drawParticles(c, M.fx_); c.restore(); drawOverlay(c, M); drawHUD();
 }
 function drawList(y) { LISTS[scene]().forEach((s, i) => txt((i === sel ? '> ' : '  ') + s + (i === sel ? ' <' : '  '), 240, y + i * 22 + 12, 12, i === sel ? '#fc3' : '#fff')); }
@@ -195,7 +195,7 @@ const toasts = [];
 function frame() {
   poll(); for (const e of takeEvents()) { toasts.push({ s: e.text, t: 240 }); if (e.type === 'off' && scene === 'match' && !O) paused = true; } if (hit('KeyM')) { S.sound = !S.sound; audio.setOn(S.sound); save(); }
   if (scene === 'match') { matchUpdate(); if (scene === 'match') drawMatch(); }
-  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.6.0 (throw + balance)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
+  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.9.0 (Auntie Sheila)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
   else if (scene === 'versus') { drawStage(c); txt('VERSUS MODE', 240, 70, 20, '#fc3'); drawList(128); menuNav(); }
   else if (scene === 'online') { drawStage(c); txt('PLAY ONLINE', 240, 70, 20, '#fc3'); txt('Host a room, share the code or link', 240, 92, 8, '#7ef'); drawList(128); menuNav(); }
   else if (scene === 'lobby') { drawLobby(); }

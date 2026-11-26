@@ -1,10 +1,10 @@
 // Finisher animations for combos. Visual only (plus hit-stop). Fighter calls m.combo() when a combo is matched and m.impact()
 // when the finisher lands; main.js draws everything here. Each combo in combos.js picks its look with these fields:
-//   anim: 'spin' | 'flip' | 'rush' | 'slam' | 'burst' | 'shake' | 'cross' | 'dunk' | 'pass'   how the attacker's body moves during the finisher
-//   col:  colour of aura / flash / shockwave / particles          fx: 'star' | 'gas' | 'bolt' | 'flame' | 'dust' | 'ball'  particle style
+//   anim: 'spin' | 'flip' | 'rush' | 'slam' | 'burst' | 'shake'   how the attacker's body moves during the finisher
+//   col:  colour of aura / flash / shockwave / particles          fx: 'star' | 'gas' | 'bolt' | 'flame' | 'dust'  particle style
 //   turns, lift (spin only), shake (screen shake), stop (hit-stop frames) are optional.
 import { GROUND, ATK } from './fighter.js';
-const TAU = Math.PI * 2, TRAIL = new Set(['rush', 'flip', 'spin', 'cross', 'dunk']);
+const TAU = Math.PI * 2, TRAIL = new Set(['rush', 'flip', 'spin', 'juke']);
 
 export function poseFx(f) {              // transform for the attacker's body, or null
   const cb = f.cur && f.cur.combo; if (!cb || !cb.anim || !ATK.includes(f.state)) return null;
@@ -13,12 +13,10 @@ export function poseFx(f) {              // transform for the attacker's body, o
     case 'spin': return { rot: fc * TAU * (cb.turns || 1) * p, dy: -(cb.lift || 0) * Math.sin(Math.PI * p) };
     case 'flip': return { rot: -fc * TAU * p, dy: -16 * Math.sin(Math.PI * p) };
     case 'rush': return { rot: fc * .22, dx: fc * 3 * Math.sin(Math.PI * p) };
-    case 'slam': return p < .45 ? { dy: -16 * (p / .45), sy: 1.1 } : p < .65 ? { dy: -16 * (1 - (p - .45) / .2) } : { sy: .84 };
+    case 'juke': return { dx: fc * 9 * Math.sin(p * TAU * 1.5), rot: fc * .1 };   // crossover shuffle
+    case 'slam': { const L = cb.lift || 16; return p < .45 ? { dy: -L * (p / .45), sy: 1.1 } : p < .65 ? { dy: -L * (1 - (p - .45) / .2) } : { sy: .84 }; }   // lift = jump height
     case 'burst': { const s = 1 + .1 * Math.sin(p * TAU * 1.5); return { sx: s, sy: s }; }
     case 'shake': return { dx: (Math.random() - .5) * 3, dy: (Math.random() - .5) * 2 };
-    case 'cross': { const w = Math.sin(p * TAU * 2.5); return { dx: fc * (6 * w + 5 * p), rot: fc * (.12 + .1 * w), sy: 1 - .07 * Math.abs(w) }; }   // dribble juke: quick side-to-side shimmy, then drive
-    case 'dunk': { const L = cb.lift || 28; return p < .55 ? { dy: -L * Math.sin(Math.PI / 2 * p / .55), rot: fc * .3 * p / .55, sy: 1.08 } : p < .75 ? { dy: -L * (1 - (p - .55) / .2), rot: fc * .3 } : { sy: .8 }; }   // leap up, hammer down, squash on landing
-    case 'pass': return { sx: 1 + .14 * Math.sin(Math.PI * p), dx: fc * 5 * Math.sin(Math.PI * p), rot: -fc * .07 * Math.sin(Math.PI * p) };   // chest pass: lean back, snap forward
   } return null;
 }
 function transformed(c, f, draw) {
@@ -39,8 +37,8 @@ export function burst(m, x, y, kind, col, n = 16) {
   for (let i = 0; i < n; i++) { const a = Math.random() * TAU, s = 1 + Math.random() * 3;
     const p = { x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, l: 22 + (Math.random() * 14 | 0), col, k: kind, g: .12 };
     if (kind === 'gas') { p.vx *= .5; p.vy = -Math.random() * 1.2; p.g = -.02; p.l += 20; }
-    if (kind === 'ball') { p.vy = -2.5 - Math.random() * 2.5; p.g = .22; p.l += 14; }
     if (kind === 'flame') { p.vx *= .5; p.vy = -1 - Math.random() * 2; p.g = -.05; }
+    if (kind === 'note') { p.vx *= .5; p.vy = -1 - Math.random() * 1.5; p.g = -.03; p.l += 14; }
     if (kind === 'dust') { p.vy = -Math.random() * 1.5; p.g = .05; p.vx *= 1.4; }
     m.fx_.push(p); }
 }
@@ -65,7 +63,9 @@ export function drawParticles(c, list) {
       case 'bolt': c.fillRect(x, y - 4, 2, 4); c.fillRect(x + 2, y - 1, 2, 4); c.fillStyle = '#fff'; c.fillRect(x, y - 3, 1, 2); break;
       case 'flame': c.fillRect(x - 2, y - 2, 4, 4); c.fillStyle = '#ffe27a'; c.fillRect(x - 1, y - 1, 2, 2); break;
       case 'dust': c.fillRect(x - 2, y - 2, 4, 3); break;
-      case 'ball': c.fillStyle = '#e8772e'; c.fillRect(x - 2, y - 3, 4, 6); c.fillRect(x - 3, y - 2, 6, 4); c.fillStyle = '#2a1408'; c.fillRect(x, y - 3, 1, 6); c.fillRect(x - 3, y, 6, 1); break;
+      case 'ball': c.fillRect(x - 2, y - 2, 5, 5); c.fillStyle = '#4a2008'; c.fillRect(x - 2, y, 5, 1); c.fillRect(x, y - 2, 1, 5); break;
+      case 'pin': c.fillRect(x - 2, y - 4, 5, 5); c.fillRect(x - 1, y + 1, 3, 2); c.fillStyle = '#000'; c.fillRect(x - 1, y - 3, 3, 3); break;   // Uber-style map pin
+      case 'note': c.fillRect(x, y, 3, 2); c.fillRect(x + 2, y - 5, 1, 6); c.fillRect(x + 3, y - 5, 3, 1); break;
       default: c.fillRect(x, y, 3, 3); } }
   c.globalAlpha = 1;
 }

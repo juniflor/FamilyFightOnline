@@ -77,18 +77,38 @@ export const COMBOS = {
     { name: 'SUPLEX COMBO', seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'flip', col: '#fd5', fx: 'dust', shake: 12, stop: 10 },
   ] },
 
-  // Kuya D: basketball moves. Cross Over = crouch jab then two quick jabs (hold DOWN for the first one only, or the whole time),
-  // Dunked On = four-hit leap-and-slam launcher, Hard Pass = chest-pass basketball projectile finisher.
-  kuyad: { combos: [
-    { name: 'CROSS OVER', seq: ['clight', 'light', 'light'], dmg: 1.5, kb: 1.6, anim: 'cross', col: '#f44', fx: 'star', shake: 4 },
-    { name: 'DUNKED ON', seq: ['light', 'light', 'light', 'heavy'], dmg: 1.7, launch: 7, final: true, anim: 'dunk', lift: 30, col: '#f22', fx: 'dust', stop: 12, shake: 14 },
-    { name: 'HARD PASS', seq: ['light', 'heavy', 'special'], dmg: 1.7, final: true, anim: 'pass', col: '#f93', fx: 'ball', stop: 9, shake: 9 },
-  ] },
-
   mom: { combos: [
     { name: 'MOM KNOWS BEST', seq: ['light', 'light', 'special'], dmg: 1.5, final: true, anim: 'shake', col: '#ff4', fx: 'bolt', shake: 6 },
     { name: 'GROUNDED', seq: ['clight', 'light', 'heavy'], dmg: 1.4, launch: 5, final: true, anim: 'slam', col: '#ff4', fx: 'bolt', shake: 8 },
     { name: 'TIME OUT', seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'burst', col: '#ff4', fx: 'bolt', stop: 10, shake: 9 },
+  ] },
+
+  // Kuya D: basketball moves
+  kuyad: { combos: [
+    { name: 'CROSSOVER', seq: ['light', 'light', 'heavy'], dmg: 1.3, kb: 1.6, anim: 'juke', col: '#f80', fx: 'ball' },
+    { name: 'DUNKED ON', seq: ['clight', 'light', 'heavy'], dmg: 1.5, launch: 6, final: true, anim: 'slam', lift: 30, col: '#f55', fx: 'ball', shake: 11, stop: 9 },
+    { name: 'HARD PASS', seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'rush', col: '#f80', fx: 'ball', shake: 8, stop: 9 },
+  ] },
+
+  // Uncle Dandy: basketball + Uber
+  uncledandy: { combos: [
+    { name: 'BANK SHOT', seq: ['clight', 'light', 'heavy'], dmg: 1.3, kb: 1.5, anim: 'flip', col: '#f80', fx: 'ball' },
+    { name: 'SAY UNCLE', seq: ['light', 'light', 'heavy'], dmg: 1.5, launch: 6, final: true, anim: 'slam', lift: 14, col: '#fd5', fx: 'star', shake: 10, stop: 9 },
+    { name: 'UBER ATTACK', seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'rush', col: '#ffffff', fx: 'pin', shake: 9, stop: 9 },
+  ] },
+
+  // Auntie Sheila: teaching
+  auntiesheila: { combos: [
+    { name: "TEACHER'S INTUITION", seq: ['light', 'light', 'heavy'], dmg: 1.3, kb: 1.4, anim: 'juke', col: '#6df', fx: 'star' },
+    { name: 'DETENTION', seq: ['clight', 'light', 'heavy'], dmg: 1.5, launch: 5, final: true, anim: 'slam', lift: 12, col: '#fd5', fx: 'dust', shake: 9, stop: 8 },
+    { name: "PRINCIPAL'S OFFICE", seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'burst', col: '#e33', fx: 'star', shake: 10, stop: 10 },
+  ] },
+
+  // Sherell: music + acting
+  sherell: { combos: [
+    { name: 'SONIC SCREAM', seq: ['light', 'light', 'special'], dmg: 1.5, final: true, anim: 'burst', col: '#6df', fx: 'note', shake: 6 },
+    { name: 'OVERREHEARSAL', seq: ['light', 'light', 'heavy'], dmg: 1.3, kb: 1.3, hs: 6, anim: 'shake', col: '#f9c', fx: 'star' },
+    { name: 'GRAND FINALE', seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'spin', turns: 1, lift: 8, col: '#fd5', fx: 'star', stop: 10, shake: 9 },
   ] },
 };
 

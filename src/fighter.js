@@ -70,15 +70,15 @@ export class Fighter {
     this.x = Math.max(MIN_X, Math.min(MAX_X, this.x + this.vx));
     this.shown += (this.hp - this.shown) * .08;
   }
-  receive(a, mv, g) {
+  receive(a, mv, g) {   // def.taken > 1 (set per fighter) = weak defense: takes extra damage
     const front = a.x === this.x || Math.sign(a.x - this.x) === this.facing, dir = Math.sign(this.x - a.x) || -a.facing, cy = GROUND - this.y - this.def.h * .6;
     if (this.state === 'block' && !mv.grab) {   // blocks work from either side (no cross-up cheese); throws (grab) go through
-      this.hp = Math.max(0, this.hp - Math.ceil(mv.dmg * .15)); this.bs = 9; this.vx = dir * Math.max(3, mv.kb * 1.6);   // every blocked hit shoves the defender back
+      this.hp = Math.max(0, this.hp - Math.ceil(mv.dmg * .15 * (this.def.taken || 1))); this.bs = 9; this.vx = dir * Math.max(3, mv.kb * 1.6);   // every blocked hit shoves the defender back
       if (!a.o && (this.x < MIN_X + 16 || this.x > MAX_X - 16 || a.y > 0)) a.vx = -dir * Math.max(3.5, mv.kb * 1.5);   // cornered, or hit by a jump-in: the attacker is pushed away instead
       g.fx(this.x, cy, '#9cf', 'block'); return false; }
     const atk = a.o || a, idx = Math.max(0, ((atk.chain && atk.chain.length) || 1) - 1), sc = Math.max(.6, 1 - .08 * idx); // later moves in a chain hit a bit softer
     atk.hits = this.state === 'hit' ? (atk.hits || 0) + 1 : 1; atk.hitsT = 80;
-    this.hp = Math.max(0, this.hp - Math.max(1, Math.round(mv.dmg * sc))); this.set('hit'); this.t = 0; this.grace = 0; this.lag = 0; if (mv.combo && g.impact) g.impact(atk, mv, this); if (mv.launch) { this.vy = mv.launch; this.y = .01; } this.stun = mv.hs; this.vx = dir * mv.kb; g.fx(this.x, cy, '#fd5', 'hit');
+    this.hp = Math.max(0, this.hp - Math.max(1, Math.round(mv.dmg * sc * (this.def.taken || 1)))); this.set('hit'); this.t = 0; this.grace = 0; this.lag = 0; if (mv.combo && g.impact) g.impact(atk, mv, this); if (mv.launch) { this.vy = mv.launch; this.y = .01; } this.stun = mv.hs; this.vx = dir * mv.kb; g.fx(this.x, cy, '#fd5', 'hit');
     return true;
   }
 }
