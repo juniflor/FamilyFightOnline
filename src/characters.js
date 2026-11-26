@@ -39,8 +39,8 @@ Object.assign(CHARACTERS, {
     light: { s: 3, a: 3, r: 8, dmg: 5, kb: 2.2, hs: 13, reach: 28, y: 14, h: 12, snd: 'light' },
     heavy: { s: 9, a: 4, r: 14, dmg: 8, kb: 4.5, hs: 21, reach: 36, y: 26, h: 14, snd: 'heavy' },
     special: { s: 6, a: 20, r: 16, dmg: 3, kb: 1.5, hs: 10, reach: 40, y: 18, h: 16, every: 5, dash: 1.5, spin: true, snd: 'special' } }), // spinning multi-kick
-  edson: mk([4, 9, 9], { name: 'EDSON', h: 50, w: 26, leg: 18, torso: 20, bw: 10, lw: 7, armH: 6, skin: '#f1c27d', hair: '#111118', top: '#222228', topD: '#111116',
-    pants: '#8a8a94', skinLeg: .5, shoes: '#eeeeee', style: 'buzz', cap: '#2a4a8a', glasses: true, hood: false, shortSleeve: true }, {
+  edson: mk([4, 9, 9], { name: 'EDSON', h: 50, w: 26, leg: 18, torso: 20, bw: 10, lw: 7, armH: 6, skin: '#c68a5c', hair: '#17110f', top: '#1e1d23', topD: '#141318',
+    pants: '#22212a', shoes: '#18181e', style: 'buzz', cap: '#17171c', glasses: true, hood: false, shortSleeve: true }, {
     light: { s: 6, a: 3, r: 10, dmg: 6, kb: 3, hs: 14, reach: 28, y: 16, h: 14, snd: 'light' },
     heavy: { s: 12, a: 4, r: 18, dmg: 11, kb: 6, hs: 24, reach: 34, y: 18, h: 18, snd: 'heavy' },
     special: { s: 10, a: 4, r: 26, dmg: 15, kb: 3.5, hs: 34, reach: 24, y: 14, h: 24, grab: true, launch: 6, snd: 'heavy' } }), // wrestling slam (unblockable grab)
@@ -85,4 +85,11 @@ Object.assign(CHARACTERS.sami, { detail: true, body: { leg: 13, arm: 10, torso: 
   frame: '#aeb6c0', lens: '#eaf1f7', hood: '#34303c', hoodL: '#5a5568', hoodD: '#24222b', hoodDD: '#17151c',
   jean: '#5073ab', jeanH: '#7f9fd0', jeanD: '#34517f',
   red: '#f6f2f4', blk: '#c9c0cc', sole: '#a9a1b6', white: '#ffffff', eye: '#1b1214', mouth: '#c8665f' } });
+// Edson: black cap with gold R, black rectangular glasses, moustache + goatee, black tee with a landscape print, stocky build, baggy black cargo pants, black/cream sneakers.
+Object.assign(CHARACTERS.edson, { detail: true, body: { leg: 11, arm: 11, torso: 13, w: 1.35 }, pal: { ol: '#09080c', skin: '#c68a5c', skinS: '#9f6a43', hair: '#17110f', hairH: '#2e2420',
+  capC: '#1d1d23', capH: '#3a3a45', capD: '#101014', gold: '#d9a94b', rect: true, glasses: true, graphic: true, baggy: true, cargo: true, noHoodie: true, neckKey: 'skin', shortSleeve: true, lowGuard: true,
+  frame: '#0e0e12', lens: '#d4dee6', eye: '#17120f', mouth: '#8c4c3e', white: '#ffffff', beard: '#3a2a22',
+  hood: '#2a2932', hoodL: '#403f4b', hoodD: '#1b1a21', hoodDD: '#121116', jean: '#2b2a34', jeanH: '#4a4856', jeanD: '#1a191f',
+  gSky: '#9a99a2', gMtn: '#63636c', gLake: '#80808a', gPine: '#202027',
+  red: '#18181e', blk: '#ece6da', sole: '#d9d1c2' } });
 export const ROSTER = Object.keys(CHARACTERS);
