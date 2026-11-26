@@ -25,7 +25,7 @@ Menus: W/S or arrows + F/Enter to confirm, Esc back. In match: P pause, Esc quit
 Add an entry to `src/characters.js` (stats, colors, three moves). Sprites are drawn procedurally in `src/sprites.js` from those fields; the roster, select screen and AI pick it up automatically.
 
 ## v1.1: eight fighters + controllers
-Fighters: Junior, Marty, Raphy (belly flop), Esa (green gas), Sydney (rapid fire), Sami (spinning kicks), Edson (wrestling slam, unblockable), Mom (electric shock).
+Fighters: Junior, Marty, Raphy (belly flop), Esa (green gas), Sydney (rapid fire), Sami (spinning kicks), Edson (wrestling slam, unblockable), Mom (electric shock), Kuya D (basketball chest pass).
 Stats (speed/attack/health, 1-10) live in `src/characters.js` and drive walk speed, damage and HP.
 
 Controllers: plug in or turn on pads at any time (press a button if Chrome doesn't see it). The first pad becomes P1, the second P2; unplug/replug is handled live (match auto-pauses). Keyboard always works for both players, so pad-vs-keyboard works. Back/Select swaps player slots (use it to make a single pad Player 2).
@@ -68,3 +68,7 @@ Chain cancels live in `src/combos.js`: when a move connects you can cancel into 
 ## Fighter heights (v1.6)
 Heights are set by `h` (hitbox) and `body` (drawn proportions: `leg`, `arm`, `torso`, `w`) in `src/characters.js`. Drawn heights: Junior 64, Esa 64, Raphy 66, Edson 66, Sydney 60, Sami 60, Mom 63, Marty 75.
 To resize a fighter keep the shape and scale `leg`, `arm` and `torso` together; drawn height is about `2 x leg + torso + 17`.
+
+## v1.6: Kuya D
+New fighter **Kuya D**: quick and strong but fragile (SPD 10, ATK 9, HP 4 = 78 health). Special = chest-pass basketball (fast projectile). Sprite: Bulls #23 jersey, white shorts with red stripe, white socks, red/white Jordans, goatee (new `detailed.js` options: `tank`, `jersey`, `number`, `stripe`, `shortsLen`, `socks`, `jordan`).
+Basketball combos: **Cross Over** = crouch Light, Light, Light (F, F, F; holding DOWN the whole time works), **Dunked On** = Light x3, Heavy (launcher, leaps and slams), **Hard Pass** = Light, Heavy, Special (chest pass with the ball). New finisher animations in `comboFx.js`: `cross` (dribble juke), `dunk`, `pass`, plus `ball` particles.
