@@ -192,7 +192,7 @@ const toasts = [];
 function frame() {
   poll(); for (const e of takeEvents()) { toasts.push({ s: e.text, t: 240 }); if (e.type === 'off' && scene === 'match' && !O) paused = true; } if (hit('KeyM')) { S.sound = !S.sound; audio.setOn(S.sound); save(); }
   if (scene === 'match') { matchUpdate(); if (scene === 'match') drawMatch(); }
-  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.5.2 (Edson)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
+  if (scene === 'menu') { drawStage(c); txt('PIXEL FIGHTER', 240, 70, 28, '#fc3'); txt('JUNIOR vs MARTY', 240, 92, 10, '#7ef'); txt('build 1.6.0 (throw + balance)', 240, 106, 7, '#aaa'); drawList(128); menuNav(); }
   else if (scene === 'versus') { drawStage(c); txt('VERSUS MODE', 240, 70, 20, '#fc3'); drawList(128); menuNav(); }
   else if (scene === 'online') { drawStage(c); txt('PLAY ONLINE', 240, 70, 20, '#fc3'); txt('Host a room, share the code or link', 240, 92, 8, '#7ef'); drawList(128); menuNav(); }
   else if (scene === 'lobby') { drawLobby(); }

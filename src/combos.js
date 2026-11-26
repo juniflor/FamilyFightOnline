@@ -25,7 +25,7 @@ export const CHAIN = {
   cheavy: [], special: [], jlight: [], jheavy: [],
 };
 
-// Fighters are looked up by name: lowercase, letters only ("Sam Li" -> "samli").
+// Fighters are looked up by name: lowercase, letters only ("Sami" -> "sami").
 // Add a new fighter by adding an entry here. Anyone not listed uses `default`.
 export const COMBOS = {
   default: { combos: [
@@ -64,11 +64,11 @@ export const COMBOS = {
     { name: 'RAPID FINISH', seq: ['light', 'heavy', 'special'], dmg: 1.5, final: true, anim: 'shake', col: '#f93', fx: 'star', shake: 7 },
   ] },
 
-  // Sam Li can chain kicks into kicks (spinning kick strings).
-  samli: { repeat: ['light', 'clight', 'heavy'], chain: { heavy: ['heavy', 'special'] }, combos: [
-    { name: 'SPIN CYCLE', seq: ['light', 'heavy', 'heavy'], dmg: 1.3, kb: 1.3, anim: 'spin', turns: 1, col: '#f8f', fx: 'star' },
-    { name: 'TORNADO KICK', seq: ['light', 'heavy', 'heavy', 'heavy'], dmg: 1.7, launch: 6, final: true, anim: 'spin', turns: 2, lift: 10, col: '#f8f', fx: 'dust', shake: 9 },
-    { name: 'DRAGON SPIN', seq: ['light', 'heavy', 'special'], dmg: 1.5, final: true, anim: 'spin', turns: 2, lift: 6, col: '#f63', fx: 'flame', stop: 9, shake: 10 },
+  // Sami can chain kicks into kicks (spinning kick strings).
+  sami: { repeat: ['light', 'clight', 'heavy'], chain: { heavy: ['heavy', 'special'] }, combos: [
+    { name: 'SPIN CYCLE', seq: ['light', 'heavy', 'heavy'], dmg: 1.2, kb: 1.3, anim: 'spin', turns: 1, col: '#f8f', fx: 'star' },
+    { name: 'TORNADO KICK', seq: ['light', 'heavy', 'heavy', 'heavy'], dmg: 1.3, launch: 6, final: true, anim: 'spin', turns: 2, lift: 10, col: '#f8f', fx: 'dust', shake: 9 },
+    { name: 'DRAGON SPIN', seq: ['light', 'heavy', 'special'], dmg: 1.3, final: true, anim: 'spin', turns: 2, lift: 6, col: '#f63', fx: 'flame', stop: 9, shake: 10 },
   ] },
 
   edson: { combos: [
