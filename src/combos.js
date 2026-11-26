@@ -77,6 +77,14 @@ export const COMBOS = {
     { name: 'SUPLEX COMBO', seq: ['light', 'heavy', 'special'], dmg: 1.6, final: true, anim: 'flip', col: '#fd5', fx: 'dust', shake: 12, stop: 10 },
   ] },
 
+  // Kuya D: basketball moves. Cross Over = crouch jab then two quick jabs (hold DOWN for the first one only, or the whole time),
+  // Dunked On = four-hit leap-and-slam launcher, Hard Pass = chest-pass basketball projectile finisher.
+  kuyad: { combos: [
+    { name: 'CROSS OVER', seq: ['clight', 'light', 'light'], dmg: 1.5, kb: 1.6, anim: 'cross', col: '#f44', fx: 'star', shake: 4 },
+    { name: 'DUNKED ON', seq: ['light', 'light', 'light', 'heavy'], dmg: 1.7, launch: 7, final: true, anim: 'dunk', lift: 30, col: '#f22', fx: 'dust', stop: 12, shake: 14 },
+    { name: 'HARD PASS', seq: ['light', 'heavy', 'special'], dmg: 1.7, final: true, anim: 'pass', col: '#f93', fx: 'ball', stop: 9, shake: 9 },
+  ] },
+
   mom: { combos: [
     { name: 'MOM KNOWS BEST', seq: ['light', 'light', 'special'], dmg: 1.5, final: true, anim: 'shake', col: '#ff4', fx: 'bolt', shake: 6 },
     { name: 'GROUNDED', seq: ['clight', 'light', 'heavy'], dmg: 1.4, launch: 5, final: true, anim: 'slam', col: '#ff4', fx: 'bolt', shake: 8 },

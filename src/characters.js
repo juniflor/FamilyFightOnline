@@ -49,6 +49,12 @@ Object.assign(CHARACTERS, {
     light: { s: 4, a: 3, r: 9, dmg: 5, kb: 2, hs: 13, reach: 26, y: 12, h: 12, snd: 'light' },
     heavy: { s: 9, a: 4, r: 15, dmg: 10, kb: 4, hs: 20, reach: 32, y: 16, h: 14, snd: 'heavy' },
     special: { s: 10, a: 12, r: 20, dmg: 3, kb: .8, hs: 30, reach: 58, y: 4, h: 30, every: 3, zap: true, snd: 'special' } }), // electric shock
+  // Kuya D: quick (SPD 10) and hits hard (ATK 9) but fragile (HP 4 = 78 health). Special = chest-pass basketball.
+  kuyad: mk([10, 9, 4], { name: 'KUYA D', h: 66, w: 24, leg: 17, torso: 20, skin: '#c98f62', hair: '#15110f', top: '#f4f1ee', topD: '#cfc9c4',
+    pants: '#f4f1ee', shoes: '#cb2128', style: 'short' }, {
+    light: { s: 3, a: 3, r: 7, dmg: 5, kb: 2.2, hs: 12, reach: 28, y: 16, h: 12, snd: 'light' },
+    heavy: { s: 7, a: 4, r: 13, dmg: 10, kb: 5, hs: 20, reach: 36, y: 26, h: 14, snd: 'heavy' },
+    special: { type: 'proj', s: 8, r: 20, dmg: 11, kb: 6, hs: 22, speed: 7, col: '#e8772e', size: 10, ball: true, snd: 'special' } }), // chest-pass basketball
 });
 // Crouch (low punch / sweep) and jump (flying punch / kick) variants are derived from each fighter's light/heavy.
 function addVariants(d) { const L = d.moves.light, H = d.moves.heavy, h = d.h;
@@ -92,4 +98,11 @@ Object.assign(CHARACTERS.edson, { detail: true, body: { leg: 15.4, arm: 15.4, to
   hood: '#2a2932', hoodL: '#403f4b', hoodD: '#1b1a21', hoodDD: '#121116', jean: '#2b2a34', jeanH: '#4a4856', jeanD: '#1a191f',
   gSky: '#9a99a2', gMtn: '#63636c', gLake: '#80808a', gPine: '#202027',
   red: '#18181e', blk: '#ece6da', sole: '#d9d1c2' } });
+// Kuya D: short black fade, smile + goatee, muscular build, white Bulls #23 tank jersey (red trim, V-neck, number), long white shorts with red stripe,
+// white crew socks, red/white Air Jordan 1 sneakers. (tank / jersey / number / stripe / socks / jordan are options in detailed.js)
+Object.assign(CHARACTERS.kuyad, { detail: true, body: { leg: 16.3, arm: 13.4, torso: 19.5, w: 1.2 }, pal: { ol: '#0b0a0e', skin: '#c98f62', skinS: '#9f6a42', skinH: '#dba577', hair: '#15110f', hairH: '#3a2e28',
+  noHoodie: true, neckKey: 'skin', tank: true, jersey: true, number: true, smile: true, beard: '#2c211a', lowGuard: true,
+  hood: '#f4f1ee', hoodL: '#ffffff', hoodD: '#cdc7c2', hoodDD: '#a29c97', trim: '#cf2229', num: '#cf2229',
+  shorts: '#f1eeea', shortsD: '#b9b3ad', shortsLen: .8, shortsW: 8.5, stripe: '#cf2229', socks: true, sock: '#f6f4f2',
+  jordan: true, red: '#cb2128', shoeW: '#f6f3ef', shoeK: '#101014', sole: '#dcd6ce', blk: '#101014', white: '#ffffff', eye: '#15110f', mouth: '#7a2e24' } });
 export const ROSTER = Object.keys(CHARACTERS);

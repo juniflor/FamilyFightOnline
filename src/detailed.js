@@ -52,17 +52,22 @@ export function drawDetailed(c, f, force) {
     const taper = (p, q, w0, w1, k) => { const dx = q[0] - p[0], dy = q[1] - p[1], n = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))));
       for (let i = 0; i <= n; i++) { const w = Math.round(w0 + (w1 - w0) * i / n); R(c, Math.round(p[0] + dx * i / n - w / 2), Math.round(p[1] + dy * i / n - 2), w, 4, ol ? P.ol : P[k]); } };
     const shoe = (a, kick) => { const [x, y] = a.map(Math.round);
+      if (P.jordan) { if (kick) { r(x - 2, y - 4, 5, 8, 'red'); r(x + 3, y - 4, 1, 8, 'sole'); r(x + 1, y - 4, 2, 3, 'shoeW'); }   // Air Jordan 1: red heel + collar, white toe, black swoosh
+        else { r(x - 2, y - 3, 5, 4, 'red'); r(x - 2, y - 3, 5, 1, 'shoeK'); r(x - 3, y + 1, 10, 3, 'shoeW'); r(x - 3, y + 1, 4, 3, 'red'); r(x + 4, y + 1, 3, 3, 'shoeW'); r(x + 1, y + 1, 4, 1, 'shoeK'); r(x - 3, y + 4, 10, 1, 'sole'); } return; }
       if (P.barefoot) { if (kick) r(x - 2, y - 4, 5, 8, 'skin'); else { r(x - 3, y + 1, 10, 4, 'skin'); r(x + 5, y + 3, 3, 2, 'skinS'); r(x - 3, y + 4, 10, 1, 'skinS'); } return; }
       if (kick) { r(x - 2, y - 4, 5, 8, 'red'); r(x + 3, y - 4, 1, 8, 'sole'); r(x + 1, y - 4, 2, 3, 'blk'); }
       else { r(x - 2, y - 3, 5, 4, 'red'); r(x - 2, y - 3, 5, 1, 'blk'); r(x - 3, y + 1, 10, 3, 'red'); r(x + 4, y + 1, 3, 3, 'blk'); r(x - 3, y + 4, 10, 1, 'sole'); r(x, y - 1, 2, 1, 'white'); } };
     const leg = (g, kick) => { const lc = P.shorts || P.skinLegs || P.skirt ? 'skin' : 'jean'; limb(hip, g.j, w6, lc); if (!P.flare && !P.baggy) limb(g.j, g.e, w5, lc); if (P.skinLegs && !ol) { r(g.j[0] - 1, g.j[1] - 2, 4, 4, 'skinH'); limb([hip[0] + 2, hip[1] + 3], [g.j[0] + 2, g.j[1] - 3], 2, 'skinH'); }
-      if (P.shorts) { const q = lerp(hip, g.j, .8); limb(hip, q, w9, 'shorts'); if (!ol) { r(q[0] - 4, q[1], 9, 1, 'white'); r(q[0] - 4, q[1] - 2, 1, 2, 'shortsD'); } } else if (!ol && !P.skinLegs && !P.skirt) { limb([hip[0] + 2, hip[1] + 2], [g.j[0] + 2, g.j[1]], 1, 'jeanH'); r(g.j[0] - 2, g.j[1], 5, 1, 'jeanD'); } if (P.skirt) { shoe(g.e, kick); const hem = lerp(hip, g.e, .8); limb(hip, g.j, w6 + 1, 'hood'); limb(g.j, hem, w6, 'hood'); taper(hip, hem, 9, 12, 'hood');
+      if (P.shorts) { const q = lerp(hip, g.j, P.shortsLen || .8), sw = P.shortsW ? Math.round(P.shortsW * W) : w9; limb(hip, q, sw, 'shorts');
+        if (!ol) { r(q[0] - 4, q[1], 9, 1, 'white'); r(q[0] - 4, q[1] - 2, 1, 2, 'shortsD'); if (P.stripe) { limb(lerp(hip, q, .15), lerp(hip, q, .9), 2, 'stripe'); r(q[0] - (sw >> 1), q[1] - 1, sw, 2, 'stripe'); r(q[0] - (sw >> 1), q[1] - 2, sw, 1, 'white'); } } } else if (!ol && !P.skinLegs && !P.skirt) { limb([hip[0] + 2, hip[1] + 2], [g.j[0] + 2, g.j[1]], 1, 'jeanH'); r(g.j[0] - 2, g.j[1], 5, 1, 'jeanD'); } if (P.skirt) { shoe(g.e, kick); const hem = lerp(hip, g.e, .8); limb(hip, g.j, w6 + 1, 'hood'); limb(g.j, hem, w6, 'hood'); taper(hip, hem, 9, 12, 'hood');
         if (!ol) { taper([hip[0] - 1, hip[1] + 2], [hem[0] - 2, hem[1]], 1, 2, 'hoodD'); taper([hip[0] + 2, hip[1] + 2], [hem[0] + 3, hem[1]], 1, 2, 'hoodL'); r(hem[0] - 6, hem[1] + 1, 12, 1, 'hoodDD'); } }
       else if (P.baggy) { shoe(g.e, kick); limb(hip, g.j, w9, 'jean'); taper(g.j, [g.e[0], g.e[1] - 1], w9, w9 + 3, 'jean');   // wide straight-leg jeans that bunch over the sneakers
         if (!ol) { taper([g.j[0] + 2, g.j[1] + 1], [g.e[0] + 3, g.e[1] - 3], 1, 3, 'jeanH'); taper([g.j[0] - 2, g.j[1] + 2], [g.e[0] - 3, g.e[1] - 2], 1, 2, 'jeanD'); r(g.e[0] - (P.cargo ? (w9 + 3) >> 1 : 6), g.e[1] - 1, P.cargo ? w9 + 3 : 12, 1, 'jeanD'); r(g.j[0] - 3, g.j[1] + 3, 7, 1, 'jeanD');
           if (P.cargo) { const q = lerp(hip, g.j, .78); r(q[0] - 3, q[1] - 2, 7, 6, 'jeanH'); r(q[0] - 2, q[1] - 1, 5, 4, 'jean'); r(q[0] - 3, q[1] + 3, 7, 1, 'jeanD'); } } }   // cargo pocket
-      else if (P.flare) { shoe(g.e, kick); const fw = P.flareW || 13; taper(g.j, [g.e[0] - 1, g.e[1] + 1], P.flareS || 6, fw, 'jean'); if (!ol) { taper([g.j[0] + 2, g.j[1] + 2], [g.e[0] + 3, g.e[1] - 1], 1, 3, 'jeanH'); r(g.e[0] - ((fw + 1) >> 1), g.e[1] + 1, fw, 1, 'jeanD'); } } else shoe(g.e, kick); };
-    const arm = (g, k, sk) => { if (P.puff) limb([sx, sy - 1], [sx, sy - 1], w5 + 3, k); if (P.shortSleeve) { limb([sx, sy], g.j, w5, sk); limb(g.j, g.e, w4, sk); limb([sx, sy], lerp([sx, sy], g.j, .45), w5 + 1, k); }
+      else if (P.flare) { shoe(g.e, kick); const fw = P.flareW || 13; taper(g.j, [g.e[0] - 1, g.e[1] + 1], P.flareS || 6, fw, 'jean'); if (!ol) { taper([g.j[0] + 2, g.j[1] + 2], [g.e[0] + 3, g.e[1] - 1], 1, 3, 'jeanH'); r(g.e[0] - ((fw + 1) >> 1), g.e[1] + 1, fw, 1, 'jeanD'); } } else { if (P.socks) { const sm = lerp(g.j, g.e, .56); limb(sm, [g.e[0], g.e[1] - 2], w5 + 1, 'sock'); if (!ol) { r(sm[0] - 2, sm[1] + 2, 4, 1, 'shoeK'); r(sm[0] - 3, sm[1], 6, 1, 'shoeK'); } } shoe(g.e, kick); } };
+    const arm = (g, k, sk) => { if (P.puff) limb([sx, sy - 1], [sx, sy - 1], w5 + 3, k);
+      if (P.tank) { limb([sx, sy], g.j, w5, sk); limb(g.j, g.e, w4, sk); if (!ol) limb(lerp([sx, sy], g.j, .2), lerp([sx, sy], g.j, .85), 2, 'skinH'); }   // sleeveless: bare, muscular arms
+      else if (P.shortSleeve) { limb([sx, sy], g.j, w5, sk); limb(g.j, g.e, w4, sk); limb([sx, sy], lerp([sx, sy], g.j, .45), w5 + 1, k); }
       else { limb([sx, sy], g.j, w5, k); limb(g.j, g.e, w4, k); if (!ol && !P.bare) limb(lerp(g.j, g.e, .7), g.e, 4, 'hoodDD'); }
       r(g.e[0] - fs / 2, g.e[1] - fs / 2, fs, fs, 'skin'); if (!ol) { r(g.e[0] - fs / 2, g.e[1], fs, 1, 'skinS'); } };
     if (P.straight) { const bx = nx - 4 + tilt, by = ny - 10;   // long straight hair hanging down the back, lighter (hairE) ends
@@ -77,6 +82,11 @@ export function drawDetailed(c, f, force) {
     arm(armB, 'hoodD', 'skinS'); leg(legB, false); leg(legF, kicking);
     limb([hip[0], hip[1] + 2], [hip[0], hip[1] + 5], w12, P.wrap ? 'wrap' : P.shorts ? 'shorts' : P.skirt ? 'hood' : 'jean');   // pelvis
     limb([hip[0], hip[1] - 2], [nx, ny + (P.bare || P.noHoodie ? Math.round(w12 / 2) - 2 : 2)], w12, 'hood');           // torso
+    if (P.jersey && !ol) { const fx = (w12 >> 1) - 1;   // basketball jersey: red armhole trim down both sides, V-neck, number on the chest
+      limb([hip[0] + fx, hip[1] - 3], [nx + fx, ny + 4], 2, 'trim'); limb([hip[0] - fx, hip[1] - 3], [nx - fx, ny + 4], 2, 'trim'); r(hip[0] - (w12 >> 1), hip[1] - 6, w12, 1, 'trim');
+      r(nx - 1, ny + 2, 6, 1, 'skin'); r(nx, ny + 3, 4, 1, 'skin'); r(nx + 1, ny + 4, 2, 1, 'skin');
+      for (const [a, b] of [[-2, 2], [-1, 3], [0, 4], [5, 2], [4, 3], [3, 4]]) r(nx + a, ny + b, 1, 1, 'trim');
+      if (P.number) { const gx = nx - 3, gy = ny + 7; [['111', '001', '111', '100', '111'], ['111', '001', '111', '001', '111']].forEach((dg, q) => dg.forEach((row, yy) => [...row].forEach((b, xx) => { if (b === '1') r(gx + q * 4 + xx, gy + yy, 1, 1, 'num'); }))); } }   // "23"
     if (P.belly) { r(nx + 8, ny + 8, 6, 11, 'hood'); if (!ol) { r(nx + 11, ny + 12, 2, 1, 'hoodDD'); r(nx + 2, ny + 6, 8, 1, 'hoodD'); r(nx + 9, ny + 18, 5, 1, 'hoodD'); } }
     if (!ol) { limb([hip[0] - 4, hip[1] - 2], [nx - 4, ny + 2], 4, 'hoodD'); limb([hip[0] + 3, hip[1] - 4], [nx + 3, ny + 5], 2, 'hoodL');
       if (!P.bare && !P.noHoodie) { r(hip[0] - Math.round(6 * W), hip[1] - 1, w12, 3, 'hoodD'); r(hip[0] - Math.round(4 * W) + lean * .3, hip[1] - 9, Math.round(9 * W), 6, 'hoodD'); r(hip[0] - Math.round(4 * W) + lean * .3, hip[1] - 9, Math.round(9 * W), 1, 'hoodDD');

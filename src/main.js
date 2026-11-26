@@ -104,7 +104,10 @@ function drawMatch() {
   c.save(); if (M.shake > 0) c.translate(Math.round((Math.random() - .5) * M.shake), Math.round((Math.random() - .5) * M.shake));
   drawStage(c); M.f.forEach(f => shadow(c, f)); drawWaves(c, M);
   const order = M.f[0].state === 'lose' ? [0, 1] : [1, 0]; order.forEach(i => drawWithFx(c, M.f[i], drawFighter));
-  M.projs.forEach(p => { const z = p.mv.size || 10; c.globalAlpha = z > 10 ? .75 : 1; c.fillStyle = p.mv.col; c.fillRect(p.x - z / 2, p.y - z * .4, z, z * .8); c.fillStyle = '#fff'; c.fillRect(p.x - 2, p.y - 2, 4, 4); c.globalAlpha = 1; });
+  M.projs.forEach(p => { if (p.mv.ball) { const bx = Math.round(p.x), by = Math.round(p.y), a = p.x * .45;   // spinning basketball
+    for (let dy = -5; dy <= 5; dy++) { const hw = Math.round(Math.sqrt(26 - dy * dy)); c.fillStyle = '#2a1408'; c.fillRect(bx - hw, by + dy, 2 * hw + 1, 1); if (Math.abs(dy) < 5) { c.fillStyle = '#e8772e'; c.fillRect(bx - hw + 1, by + dy, 2 * hw - 1, 1); } }
+    c.fillStyle = '#2a1408'; c.fillRect(bx + Math.round(Math.cos(a) * 3), by - 4, 1, 9); c.fillRect(bx - 4, by, 9, 1); c.fillStyle = '#ffb870'; c.fillRect(bx - 3, by - 3, 2, 1); return; }
+  const z = p.mv.size || 10; c.globalAlpha = z > 10 ? .75 : 1; c.fillStyle = p.mv.col; c.fillRect(p.x - z / 2, p.y - z * .4, z, z * .8); c.fillStyle = '#fff'; c.fillRect(p.x - 2, p.y - 2, 4, 4); c.globalAlpha = 1; });
   drawParticles(c, M.fx_); c.restore(); drawOverlay(c, M); drawHUD();
 }
 function drawList(y) { LISTS[scene]().forEach((s, i) => txt((i === sel ? '> ' : '  ') + s + (i === sel ? ' <' : '  '), 240, y + i * 22 + 12, 12, i === sel ? '#fc3' : '#fff')); }
